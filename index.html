@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BioNet Network</title>
+    <style>
+        :root {
+            --primary: #2ecc71;
+            --primary-glow: rgba(46, 204, 113, 0.4);
+            --bg: #0a0f0d;
+            --surface: rgba(18, 24, 21, 0.85);
+            --text: #e0e6e3;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            background: radial-gradient(circle at center, #111d16 0%, #050806 100%);
+        }
+        canvas { display: block; width: 100%; height: 100%; }
+
+        header {
+            padding: 40px 20px;
+            text-align: center;
+            background: linear-gradient(to bottom, rgba(10,15,13,0.9), rgba(10,15,13,0));
+        }
+        header h1 {
+            font-size: 2.2rem;
+            margin: 0;
+            color: #fff;
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+        header p {
+            color: var(--primary);
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-top: 10px;
+        }
+
+        .freq-badge {
+            background: rgba(18, 24, 21, 0.9);
+            border: 1px solid var(--primary);
+            box-shadow: 0 0 15px var(--primary-glow);
+            padding: 12px 20px;
+            border-radius: 30px;
+            display: inline-block;
+            margin: 15px auto;
+            font-size: 0.85rem;
+            backdrop-filter: blur(5px);
+        }
+        .freq-badge span { font-weight: bold; color: #fff; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        h2 {
+            text-align: center;
+            font-size: 1.6rem;
+            margin: 40px 0 20px 0;
+            border-bottom: 1px solid rgba(46, 204, 113, 0.2);
+            padding-bottom: 10px;
+            color: #fff;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .product-card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s;
+            display: flex;
+            flex-direction: column;
+        }
+        .product-img-placeholder {
+            height: 160px;
+            background: linear-gradient(45deg, #16261e, #0e1713);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            font-size: 3.5rem;
+        }
+        .product-content { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+        .product-title { font-size: 1.2rem; margin: 0 0 10px 0; color: #fff; }
+        .product-desc { font-size: 0.9rem; color: #a0aab0; line-height: 1.4; margin-bottom: 15px; }
+        .product-footer { margin-top: auto; display: flex; justify-content: space-between; align-items: center; }
+        .price { font-size: 1.3rem; color: var(--primary); font-weight: bold; }
+        .buy-btn {
+            background: var(--primary);
+            color: var(--bg);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .contact-section {
+            background: var(--surface);
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            padding: 25px;
+            border-radius: 16px;
+            max-width: 500px;
+            margin: 0 auto;
+            backdrop-filter: blur(10px);
+        }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 6px; font-size: 0.85rem; color: #a0aab0; }
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            background: #090d0b;
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 0.95rem;
+        }
+        .submit-btn {
+            width: 100%;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px;
+            border-radius: 6px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .submit-btn:hover { background: var(--primary); color: var(--bg); }
+        footer { text-align: center; padding: 30px; font-size: 0.8rem; color: #444; }
+    </style>
+</head>
+<body>
+
+    <div id="canvas-container"><canvas id="myceliumCanvas"></canvas></div>
+
+    <header>
+        <h1>BioNet Network</h1>
+        <p>Propojení internetu a sítě Wood Wide Web</p>
+        <div class="freq-badge">
+            Schumann: <span id="live-hz">7.83 Hz</span> | Transpozice: <span id="live-ghz" style="color: #3498db;">2.412 GHz</span>
+        </div>
+    </header>
+
+    <div class="container">
+        <h2>Produkty sítě</h2>
+        <div class="products-grid">
+            <div class="product-card">
+                <div class="product-img-placeholder">🍄</div>
+                <div class="product-content">
+                    <h3 class="product-title">Mykorhizní IoT Inokulant</h3>
+                    <p class="product-desc">Kultura pro injektáž kořenů. Zvyšuje propustnost bio-signálů v půdě.</p>
+                    <div class="product-footer"><div class="price">490 Kč</div><button class="buy-btn" onclick="alert('Přidáno')">Objednat</button></div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img-placeholder">📡</div>
+                <div class="product-content">
+                    <h3 class="product-title">Lesní Anténa (Senzor)</h3>
+                    <p class="product-desc">Sondy ke snímání biopotenciálů stromů. Kompatibilní s generátory v mobilu.</p>
+                    <div class="product-footer"><div class="price">1 290 Kč</div><button class="buy-btn" onclick="alert('Přidáno')">Objednat</button></div>
+                </div>
+            </div>
+        </div>
+
+        <h2>Kontaktujte mě</h2>
+        <div class="contact-section">
+            <form onsubmit="event.preventDefault(); alert('Zpráva odeslána!');">
+                <div class="form-group">
+                    <label>Jméno</label>
+                    <input type="text" required placeholder="Jan Novák">
+                </div>
+                <div class="form-group">
+                    <label>E-mail</label>
+                    <input type="email" required placeholder="jmeno@domena.cz">
+                </div>
+                <div class="form-group">
+                    <label>Zpráva</label>
+                    <textarea rows="4" required placeholder="Mám zájem o napojení pozemku..."></textarea>
+                </div>
+                <button type="submit" class="submit-btn">Odeslat přes síť</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>&copy; 2026 BioNet Platform. Resonating at 7.83 Hz.</footer>
+
+    <script>
+        const canvas = document.getElementById('myceliumCanvas');
+        const ctx = canvas.getContext('2d');
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        const particles = [];
+        const particleCount = 60; // Sníženo pro plynulost na mobilech
+        const maxDistance = 120;
+        
+        class MyceliumNode {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * 0.3;
+                this.vy = (Math.random() - 0.5) * 0.3;
+                this.radius = Math.random() * 2 + 1;
+                this.pulsePhase = Math.random() * Math.PI * 2;
+            }
+            update(speedFactor) {
+                this.x += this.vx * speedFactor; this.y += this.vy * speedFactor;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+                this.pulsePhase += 0.05 * speedFactor;
+            }
+            draw(liveRatio) {
+                ctx.beginPath();
+                let currentRadius = this.radius + Math.sin(this.pulsePhase) * 1.2 * liveRatio;
+                ctx.arc(this.x, this.y, currentRadius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(46, 204, 113, ${0.4 + liveRatio * 0.6})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < particleCount; i++) particles.push(new MyceliumNode());
+
+        let globalSpeedFactor = 1.0; let globalLiveRatio = 0.5;
+
+        setInterval(() => {
+            let currentHz = 7.83 + (Math.random() - 0.5) * 0.15;
+            let ratio = (currentHz - 7.5) / (8.2 - 7.5);
+            let internetGhz = 2.4 + (ratio * 0.083);
+            document.getElementById('live-hz').innerText = currentHz.toFixed(3) + ' Hz';
+            document.getElementById('live-ghz').innerText = internetGhz.toFixed(3) + ' GHz';
+            globalSpeedFactor = 0.5 + (ratio * 1.5); globalLiveRatio = ratio;
+        }, 300);
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
